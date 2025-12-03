@@ -14,10 +14,14 @@
     <None Update="Day02\Data\Input.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Day03\Data\Input.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Day02\Data\" />
+    <Folder Include="Day03\Data\" />
   </ItemGroup>
 
 </Project>
