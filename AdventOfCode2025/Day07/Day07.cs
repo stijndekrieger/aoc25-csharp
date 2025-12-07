@@ -20,21 +20,26 @@ public class Day07
         }
 
         var amountOfSplits = 0;
+        // TODO
+        var amountOfTimelines = 0;
         var currentRow = 0;
-        var beamColumns = new List<int> { startingColumn };
-        var debugDiagram = (char[,])diagram.Clone();
+        var beamColumns = new List<(int, int)> { (startingColumn, 1) };
         while (true)
         {
             if (currentRow >= diagram.GetLength(0))
                 break;
 
+            if (currentRow > 100)
+            {
+                var x = beamColumns.OrderBy(bc => bc.Item1).ToList();
+            }
+
             var columnsToRemove = new List<int>();
             var columnsToAdd = new List<int>();
-            foreach (var column in beamColumns)
+            foreach (var (column, amount) in beamColumns)
             {
                 if (diagram[currentRow, column] == '.')
                 {
-                    debugDiagram[currentRow, column] = '|';
                     continue;
                 }
                 else if (diagram[currentRow, column] == '^')
@@ -46,17 +51,36 @@ public class Day07
             }
 
             foreach (var col in columnsToRemove)
-                beamColumns.Remove(col);
+            {
+                var column = beamColumns.First(bc => bc.Item1 == col);
+                var newValue = column.Item2 - 1;
+                if (newValue <= 0)
+                {
+                    beamColumns.Remove(column);
+                }
+                else
+                {
+                    column.Item2--;
+                }
+            }
 
-            beamColumns.AddRange(columnsToAdd);
-            beamColumns = beamColumns.Distinct().ToList();
+            foreach (var col in columnsToAdd)
+            {
+                var column = beamColumns.FirstOrDefault(bc => bc.Item1 == col);
+                if (column != default)
+                {
+                    column.Item2++;
+                }
+                else
+                {
+                    beamColumns.Add((col, 1));
+                }
+            }
 
-            //debugDiagram.PrintToConsole();
             currentRow++;
         }
 
-
         Console.WriteLine("Day 7 Part 1: " + amountOfSplits);
-        Console.WriteLine("Day 7 Part 2: " + 0);
+        Console.WriteLine("Day 7 Part 2: " + amountOfTimelines);
     }
 }
