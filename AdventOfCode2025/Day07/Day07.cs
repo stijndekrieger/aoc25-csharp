@@ -20,65 +20,40 @@ public class Day07
         }
 
         var amountOfSplits = 0;
-        // TODO
-        var amountOfTimelines = 0;
-        var currentRow = 0;
-        var beamColumns = new List<(int, int)> { (startingColumn, 1) };
+        var currentRow = 1;
+        var beamColumns = new List<(int column, ulong count)> { (startingColumn, 1) };
         while (true)
         {
             if (currentRow >= diagram.GetLength(0))
                 break;
 
-            if (currentRow > 100)
-            {
-                var x = beamColumns.OrderBy(bc => bc.Item1).ToList();
-            }
-
-            var columnsToRemove = new List<int>();
-            var columnsToAdd = new List<int>();
-            foreach (var (column, amount) in beamColumns)
+            var newBeamColumns = new List<(int column, ulong count)>();
+            foreach (var (column, count) in beamColumns)
             {
                 if (diagram[currentRow, column] == '.')
                 {
+                    newBeamColumns.Add((column, count));
                     continue;
                 }
                 else if (diagram[currentRow, column] == '^')
                 {
-                    columnsToRemove.Add(column);
-                    columnsToAdd.AddRange(column + 1, column - 1);
+
+                    newBeamColumns.Add((column - 1, count));
+                    newBeamColumns.Add((column + 1, count));
+
                     amountOfSplits++;
                 }
             }
 
-            foreach (var col in columnsToRemove)
-            {
-                var column = beamColumns.First(bc => bc.Item1 == col);
-                var newValue = column.Item2 - 1;
-                if (newValue <= 0)
-                {
-                    beamColumns.Remove(column);
-                }
-                else
-                {
-                    column.Item2--;
-                }
-            }
-
-            foreach (var col in columnsToAdd)
-            {
-                var column = beamColumns.FirstOrDefault(bc => bc.Item1 == col);
-                if (column != default)
-                {
-                    column.Item2++;
-                }
-                else
-                {
-                    beamColumns.Add((col, 1));
-                }
-            }
+            beamColumns = newBeamColumns
+                .GroupBy(t => t.column)
+                .Select(g => (g.Key, (ulong)g.Sum(t => (long)t.count)))
+                .ToList();
 
             currentRow++;
         }
+
+        var amountOfTimelines = (ulong)beamColumns.Sum(bc => (long)bc.count);
 
         Console.WriteLine("Day 7 Part 1: " + amountOfSplits);
         Console.WriteLine("Day 7 Part 2: " + amountOfTimelines);
